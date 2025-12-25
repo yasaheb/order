@@ -1,11 +1,12 @@
+
 <!DOCTYPE html>
 <html lang="fa">
 <head>
   <meta charset="UTF-8">
-  <title>فرم سفارش کترینگ برکت</title>
+  <title>سفارش آنلاین کترینگ برکت</title>
   <style>
     body { font-family: Tahoma; direction: rtl; background:#f5f5f5; }
-    .box { max-width: 400px; margin: auto; background:#fff; padding:15px; border-radius:10px; }
+    .box { max-width: 400px; margin: auto; background:#fff; padding:15px; border-radius:10px; margin-top:30px; }
     input, select, button { width:100%; margin:8px 0; padding:8px; }
     button { background:#2e7d32; color:#fff; border:none; border-radius:5px; }
   </style>
@@ -15,19 +16,56 @@
 <div class="box">
   <h3>سفارش آنلاین کترینگ برکت</h3>
 
-  <input type="text" placeholder="نام و نام خانوادگی" required>
-  <input type="tel" placeholder="شماره تماس (ثابت)">
-  
-  <select>
+  <input type="text" id="name" placeholder="نام و نام خانوادگی" required>
+  <input type="tel" id="phone" placeholder="شماره تماس ثابت" value="05137258844" readonly>
+
+  <select id="food">
     <option>چلوکباب</option>
     <option>زرشک پلو با مرغ</option>
     <option>قیمه</option>
   </select>
 
-  <input type="number" placeholder="تعداد پرس">
+  <input type="number" id="quantity" placeholder="تعداد پرس" min="1" value="1">
 
-  <button>ثبت سفارش</button>
+  <button onclick="sendOrder()">ثبت سفارش</button>
 </div>
+
+<script>
+async function sendOrder() {
+  const name = document.getElementById('name').value;
+  const phone = document.getElementById('phone').value;
+  const food = document.getElementById('food').value;
+  const quantity = document.getElementById('quantity').value;
+
+  if(!name) { alert('لطفاً نام خود را وارد کنید'); return; }
+
+  const message = `سفارش جدید کترینگ برکت:\nنام: ${name}\nشماره: ${phone}\nغذا: ${food}\nتعداد: ${quantity}`;
+
+  const token = 'bot197888:106447ca-3e0a-4129-ba9b-47adbd0dd604'; // توکن ربات ایتا
+  const chat_id = '71267143'; // آی‌دی کانال یا ربات
+
+  const url = `https://api.eitaa.com/bot${token}/sendMessage`;
+
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: chat_id, text: message })
+    });
+
+    if(response.ok) {
+      alert('سفارش شما با موفقیت ارسال شد ✅');
+      document.getElementById('name').value = '';
+      document.getElementById('quantity').value = '1';
+    } else {
+      alert('ارسال سفارش موفق نبود ❌');
+    }
+  } catch(err) {
+    alert('خطا در ارسال سفارش ❌');
+    console.error(err);
+  }
+}
+</script>
 
 </body>
 </html>
