@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fa">
 <head>
@@ -36,30 +37,37 @@ async function sendOrder() {
   const food = document.getElementById('food').value;
   const quantity = document.getElementById('quantity').value;
 
-  if(!name) { alert('لطفاً نام خود را وارد کنید'); return; }
+  if (!name) {
+    alert('لطفاً نام خود را وارد کنید');
+    return;
+  }
 
-  const message = `سفارش جدید کترینگ برکت:\nنام: ${name}\nشماره: ${phone}\nغذا: ${food}\nتعداد: ${quantity}`;
-
-  const token = 'bot197888:8feca93b-4490-4d89-934f-3f14a3ae7d8d'; // توکن ربات ایتا
-  const chat_id = '10946862'; // آی‌دی کانال یا ربات
-
-  const url = `https://api.eitaa.com/bot${token}/sendMessage`;
+  // ✅ لینک Cloudflare Worker
+  const webhookUrl = 'https://eitaa-order.yassaheb.workers.dev';
 
   try {
-    const response = await fetch(url, {
+    const response = await fetch(webhookUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: chat_id, text: message })
+      body: JSON.stringify({
+        name: name,
+        phone: phone,
+        food: food,
+        quantity: quantity
+      })
     });
 
-    if(response.ok) {
+    const result = await response.json();
+
+    if (result.status === 'success') {
       alert('سفارش شما با موفقیت ارسال شد ✅');
       document.getElementById('name').value = '';
       document.getElementById('quantity').value = '1';
     } else {
       alert('ارسال سفارش موفق نبود ❌');
+      console.error(result);
     }
-  } catch(err) {
+  } catch (err) {
     alert('خطا در ارسال سفارش ❌');
     console.error(err);
   }
